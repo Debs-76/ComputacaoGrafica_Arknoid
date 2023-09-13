@@ -12,7 +12,7 @@ class Jogo(object):
         self.root = Tk()
         self.root.geometry('%ix%i' %(LARGURA, ALTURA))
         self.root.resizable(False, False)
-        self.root.title('Primeiro Jogo')
+        self.root.title('ARKNOID')
 
         #frame para conter o canvas
         self.frame = Frame(bg="blue")
