@@ -1,6 +1,6 @@
 # Projeto de Computação Gráfica - IFCE
 
-![Arknoid](<img src="/assets/img/inGame.PNG">)
+![Arknoid](<img/inGame.png>)
 
 ## Introdução
 
