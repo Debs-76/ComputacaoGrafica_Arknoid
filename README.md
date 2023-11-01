@@ -18,6 +18,13 @@ No jogo, uma camada de tijolos é alinhada no topo da tela. A bola passa pela te
 - **Nome**: Computação Gráfica
 - **Professor**: Walber Florencio de Almeida
 - **Instituição**: IFCE (Instituto Federal do Ceará)
+  
+### Equipe do projeto
+- Danniel Emanuel Bruno Silva
+- Daniel Ferreira do Nascimento
+- Eduardo Catunda e Silva
+- Thiago Igor Maia Barroso
+- Yan de Oliveira Falcão
 
 ### Tema do Projeto
 - Este projeto é um jogo inspirado pelo clássico "Breakout" da Atari, onde o jogador controla uma plataforma para rebater uma bola e destruir blocos.
