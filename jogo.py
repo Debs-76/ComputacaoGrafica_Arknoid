@@ -55,19 +55,19 @@ class Jogo(object):
     def novoJogo(self):
         
         #Criação dos elementos do jogo - PLAYER
-        self.player = Retangulo(largura = 100, altura = 20, cor = 'white', pos = (LARGURA//2 + 360, 380), vel = (15, 15), tag = 'player')
+        self.player = Retangulo(largura = 100, altura = 10, cor = 'white', pos = (LARGURA//2 + 360, 380), vel = (15, 15), tag = 'player')
         self.player.desenhar(self.canvas)
         self.canvas.bind('<Motion>', self.move_player)
         
         #criar a bolinha do jogo
-        self.bola = Bola(raio = 30, cor = 'red', pos = (100, 200), vel = (3, 3))
+        self.bola = Bola(raio = 20, cor = 'red', pos = (100, 200), vel = (3, 3))
         
         
         
         #lista dos retangulos
         self.r = []
-        l, c, e = 5, 8, 2   #linhas, colunas e espaçamentos
-        b, h, y0 = 48, 20, 50   #base, altura e posicao inicial
+        l, c, e = 6, 8, 2   #linhas, colunas e espaçamentos
+        b, h, y0 = 50, 10, 60   #base, altura e posicao inicial
 
         for i in range(l):
             cor = random.choice(['black', 'orange', 'white', 'lightgray', 'yellow', 'green', 'purple'])
