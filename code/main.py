@@ -15,6 +15,9 @@ class Game:
 		# background
 		self.bg = self.create_bg('graphics/other/bg2.png')
 
+		# background base
+		self.bg_menu = self.create_bg('graphics/other/bgMenu.png')
+
 		# fonte da tela do menu
 		self.font = pygame.font.Font("fonts/ARCADE_I.TTF", 25)
 
@@ -112,8 +115,9 @@ class Game:
 
 	def run(self):
 		last_time = time.time()
-		pygame.display.set_caption("arknoid")
-		while True:
+		pygame.display.set_caption("Arknoid")
+		run = True
+		while run:
 			
 			# delta time
 			dt = time.time() - last_time
@@ -121,13 +125,8 @@ class Game:
 
 			# event loop
 			for event in pygame.event.get():
-				if event.type == pygame.QUIT or self.player.hearts <= 0:
-					# Aqui deve ser feito a tela de Game Over
-					self.music.stop()
-					# self.game_over.play()
-					# self.ball.active = False
-					pygame.quit()
-					sys.exit()
+				if event.type == pygame.QUIT:
+					self.quit
 				if event.type == pygame.KEYDOWN:
 					if event.key == pygame.K_SPACE:
 						self.ball.active = True
@@ -135,6 +134,8 @@ class Game:
 							self.create_projectile()
 							self.can_shoot = False
 							self.shoot_time = pygame.time.get_ticks()
+			if self.player.hearts <= 0:
+				self.game_over_screen()
 			
 			# draw bg
 			self.display_surface.blit(self.bg,(0,0))
@@ -150,7 +151,7 @@ class Game:
 			self.display_hearts()
 
 			# update window
-			pygame.display.update()
+			pygame.display.flip()
 	
 	def quit(self):
 		self.music.stop()
@@ -161,7 +162,6 @@ class Game:
 		pygame.display.set_caption("Menu")
 		
 	# setup
-		bg_menu = self.create_bg('graphics/other/bgMenu.png')
 		start_button = Button(800, 200, 200, 50, "Start", action=game.run)
 		quit_button = Button(800, 300, 200, 50, "Quit", action=game.quit)
 		buttons = [start_button, quit_button]
@@ -170,8 +170,7 @@ class Game:
 		while True:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
-					pygame.quit()
-					sys.exit()
+					self.quit()
 				elif event.type == pygame.MOUSEBUTTONDOWN:
 					if event.button == 1:  # Botão esquerdo do mouse
 						for button in buttons:
@@ -181,7 +180,7 @@ class Game:
 					button.handle_event(event)
 
         # Desenhar a tela
-			self.display_surface.blit(bg_menu,(0,0))
+			self.display_surface.blit(self.bg_menu,(0,0))
 			for button in buttons:
 				button.draw(self.display_surface)
 
@@ -192,6 +191,24 @@ class Game:
 
         # Atualizar a tela
 			pygame.display.flip()
+
+	def game_over_screen(self):
+		
+		while True:
+			pygame.display.set_caption("Game Over")
+			
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					self.quit()
+			
+			self.display_surface.blit(self.bg_menu,(0,0))
+			text_surface = self.font.render("GAME OVER", True, (255, 255, 255))
+			text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+			self.display_surface.blit(text_surface, text_rect)
+			
+			pygame.display.flip()
+
+	
 			
 
 
