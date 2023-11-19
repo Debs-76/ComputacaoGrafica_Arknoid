@@ -4,16 +4,19 @@ from settings import *
 from sprites import Player, Ball, Block, Upgrade, Projectile
 from surfacemaker import SurfaceMaker
 from random import choice, randint
+from button import *
 
 class Game:
 	def __init__(self):
-		
+		 
 		pygame.init()
 		self.display_surface = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
-		pygame.display.set_caption('Arknoid')
 
 		# background
-		self.bg = self.create_bg()
+		self.bg = self.create_bg('graphics/other/bg2.png')
+
+		# fonte da tela do menu
+		self.font = pygame.font.Font("fonts/ARCADE_I.TTF", 25)
 
 		# sprite group setup
 		self.all_sprites = pygame.sprite.Group()
@@ -55,11 +58,12 @@ class Game:
 		upgrade_type = choice(UPGRADES)
 		Upgrade(pos,upgrade_type,[self.all_sprites,self.upgrade_sprites])
 
-	def create_bg(self):
-		bg_original = pygame.image.load('graphics/other/bg2.png').convert()
-		scale_factor = WINDOW_HEIGHT / bg_original.get_height()
-		scaled_width = bg_original.get_width() * scale_factor
-		scaled_height = bg_original.get_height() * scale_factor
+	def create_bg(self, image):
+		bg_original = pygame.image.load(image).convert()
+		scale_factor_height = WINDOW_HEIGHT / bg_original.get_height()
+		scale_factor_width = WINDOW_WIDTH / bg_original.get_width()
+		scaled_width = bg_original.get_width() * scale_factor_width
+		scaled_height = bg_original.get_height() * scale_factor_height
 		scaled_bg = pygame.transform.scale(bg_original,(scaled_width,scaled_height)) 
 		return scaled_bg
 
@@ -108,6 +112,7 @@ class Game:
 
 	def run(self):
 		last_time = time.time()
+		pygame.display.set_caption("arknoid")
 		while True:
 			
 			# delta time
@@ -146,7 +151,51 @@ class Game:
 
 			# update window
 			pygame.display.update()
+	
+	def quit(self):
+		self.music.stop()
+		pygame.quit()
+		sys.exit()
+
+	def main_menu(self):
+		pygame.display.set_caption("Menu")
+		
+	# setup
+		bg_menu = self.create_bg('graphics/other/bgMenu.png')
+		start_button = Button(800, 200, 200, 50, "Start", action=game.run)
+		quit_button = Button(800, 300, 200, 50, "Quit", action=game.quit)
+		buttons = [start_button, quit_button]
+
+    # Loop principal
+		while True:
+			for event in pygame.event.get():
+				if event.type == pygame.QUIT:
+					pygame.quit()
+					sys.exit()
+				elif event.type == pygame.MOUSEBUTTONDOWN:
+					if event.button == 1:  # Botão esquerdo do mouse
+						for button in buttons:
+							if button.is_clicked(event.pos):
+								button.action()
+				for button in buttons:
+					button.handle_event(event)
+
+        # Desenhar a tela
+			self.display_surface.blit(bg_menu,(0,0))
+			for button in buttons:
+				button.draw(self.display_surface)
+
+		# Desenhar texto na tela
+			text_surface = self.font.render("GALAXY ARKA", True, (255, 255, 255))
+			text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, 120))
+			self.display_surface.blit(text_surface, text_rect)
+
+        # Atualizar a tela
+			pygame.display.flip()
+			
+
+
 
 if __name__ == '__main__':
 	game = Game()
-	game.run()
+	game.main_menu()
