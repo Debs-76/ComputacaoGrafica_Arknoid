@@ -32,6 +32,6 @@ class Button:
             else:
                 self.current_color = WHITE
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1 and self.is_hovered(event.pos):
+            if event.button == 1 and self.is_clicked(event.pos):
                 self.action()
 
