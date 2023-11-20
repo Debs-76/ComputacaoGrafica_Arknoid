@@ -28,3 +28,5 @@ BLOCK_WIDTH = WINDOW_WIDTH / len(BLOCK_MAP[0]) - GAP_SIZE
 TOP_OFFSET = WINDOW_HEIGHT // 30
 
 UPGRADES = ['speed','laser','heart','size']
+
+DOWNGRADES = ['slow','death']

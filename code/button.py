@@ -11,7 +11,7 @@ class Button:
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.action = action
-        self.font = pygame.font.Font("fonts/ARCADE_I.TTF", 25)
+        self.font = pygame.font.Font("../fonts/ARCADE_I.TTF", 25)
         self.current_color = WHITE
 
     def draw(self, screen):
