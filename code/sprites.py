@@ -6,11 +6,28 @@ class Upgrade(pygame.sprite.Sprite):
 	def __init__(self,pos,upgrade_type,groups):
 		super().__init__(groups)
 		self.upgrade_type = upgrade_type
-		self.image = pygame.image.load(f'graphics/upgrades/{upgrade_type}.png').convert_alpha()
+		self.image = pygame.image.load(f'../graphics/upgrades/{upgrade_type}.png').convert_alpha()
 		self.rect = self.image.get_rect(midtop = pos)
 
 		self.pos = pygame.math.Vector2(self.rect.topleft)
 		self.speed = 300
+
+	def update(self,dt):
+		self.pos.y += self.speed * dt
+		self.rect.y = round(self.pos.y)
+
+		if self.rect.top > WINDOW_HEIGHT + 100:
+			self.kill()
+	
+class Downgrade(pygame.sprite.Sprite):
+	def __init__(self,pos,downgrade_type, groups):
+		super().__init__(groups)
+		self.downgrade_type = downgrade_type
+		self.image = pygame.image.load(f'../graphics/downgrades/{downgrade_type}.png').convert_alpha()
+		self.rect = self.image.get_rect(midtop = pos)
+
+		self.pos = pygame.math.Vector2(self.rect.topleft)
+		self.speed = 200
 
 	def update(self,dt):
 		self.pos.y += self.speed * dt
@@ -55,7 +72,7 @@ class Player(pygame.sprite.Sprite):
 
 		# laser
 		self.laser_amount = 0
-		self.laser_surf = pygame.image.load('graphics/other/laser.png').convert_alpha()
+		self.laser_surf = pygame.image.load('../graphics/other/laser.png').convert_alpha()
 		self.laser_rects = []
 
 	def input(self):
@@ -90,6 +107,21 @@ class Player(pygame.sprite.Sprite):
 		if upgrade_type == 'laser':
 			self.laser_amount += 1
 
+	def downgrade(self,downgrade_type):
+		if downgrade_type == 'slow':
+			self.speed -= 50
+		if downgrade_type == 'death':
+			self.hearts -= 1
+
+		# if downgrade_type == 'size':
+		# 	new_width = self.rect.width * 1.1
+		# 	self.image = self.surfacemaker.get_surf('player',(new_width,self.rect.height))
+		# 	self.rect = self.image.get_rect(center = self.rect.center)
+		# 	self.pos.x = self.rect.x
+
+		# if downgrade_type == 'laser':
+		# 	self.laser_amount += 1
+
 	def display_lasers(self):
 		self.laser_rects = []
 		if self.laser_amount > 0:
@@ -118,8 +150,8 @@ class Ball(pygame.sprite.Sprite):
 		self.player = player
 		self.blocks = blocks
 
-		# graphics setup
-		self.image = pygame.image.load('graphics/other/ball.png').convert_alpha()
+		# ../graphics setup
+		self.image = pygame.image.load('../graphics/other/ball.png').convert_alpha()
 
 		# position setup
 		self.rect = self.image.get_rect(midbottom = player.rect.midtop)
@@ -131,12 +163,12 @@ class Ball(pygame.sprite.Sprite):
 		# active
 		self.active = False
 
-		# sounds
+		# ../sounds
 
-		self.impact_sound = pygame.mixer.Sound('sounds/impact.wav')
+		self.impact_sound = pygame.mixer.Sound('../sounds/impact.wav')
 		self.impact_sound.set_volume(0.1)
 
-		self.fail_sound = pygame.mixer.Sound('sounds/fail.wav')
+		self.fail_sound = pygame.mixer.Sound('../sounds/fail.wav')
 		self.fail_sound.set_volume(0.1)
 
 	def window_collision(self,direction):
@@ -230,7 +262,7 @@ class Ball(pygame.sprite.Sprite):
 			self.pos = pygame.math.Vector2(self.rect.topleft)
 
 class Block(pygame.sprite.Sprite):
-	def __init__(self,block_type,pos,groups,surfacemaker,create_upgrade):
+	def __init__(self,block_type,pos,groups,surfacemaker,create_upgrade,create_downgrade):
 		super().__init__(groups)
 		self.surfacemaker = surfacemaker
 		self.image = self.surfacemaker.get_surf(COLOR_LEGEND[block_type],(BLOCK_WIDTH, BLOCK_HEIGHT))
@@ -243,12 +275,17 @@ class Block(pygame.sprite.Sprite):
 		# upgrade
 		self.create_upgrade = create_upgrade
 
+		# downgrade
+		self.create_downgrade = create_downgrade
+
 	def get_damage(self,amount):
 		self.health -= amount
 
 		if self.health > 0:
 			self.image = self.surfacemaker.get_surf(COLOR_LEGEND[str(self.health)],(BLOCK_WIDTH, BLOCK_HEIGHT))
 		else:
-			if randint(0,10) < 11:
+			if randint(0,1) == 0:
 				self.create_upgrade(self.rect.center)
+			else:
+				self.create_downgrade(self.rect.center)
 			self.kill()

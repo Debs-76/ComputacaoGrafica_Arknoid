@@ -60,4 +60,5 @@ cd ComputacaoGrafica_Arknoid
 pip install -r requirements.txt
 
 # Execute o projeto
+cd .\code\
 python main.py
