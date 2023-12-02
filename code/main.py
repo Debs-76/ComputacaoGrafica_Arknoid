@@ -130,7 +130,7 @@ class Game:
 		pygame.display.set_caption("Arknoid")
 		run = True
 		while run:
-			
+
 			# delta time
 			dt = time.time() - last_time
 			last_time = time.time()
@@ -148,10 +148,10 @@ class Game:
 							self.shoot_time = pygame.time.get_ticks()
 			if self.player.hearts <= 0:
 				self.game_over_screen()
-			
+
 			# draw bg
 			self.display_surface.blit(self.bg,(0,0))
-			
+
 			# update the game
 			self.all_sprites.update(dt)
 			self.upgrade_collision()
@@ -205,26 +205,43 @@ class Game:
         # Atualizar a tela
 			pygame.display.flip()
 
+	def restart(self):
+		self.__init__()
+		self.run()
+
 	def game_over_screen(self):
-		
+		pygame.display.set_caption("Game Over")
+
+	# setup
+		restart_button = Button(800, 200, 200, 50, "Restart", action=game.restart)
+		quit_button = Button(800, 300, 200, 50, "Quit", action=game.quit)
+		buttons = [restart_button, quit_button]
+
+    # Loop principal
 		while True:
-			pygame.display.set_caption("Game Over")
-			
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					self.quit()
-			
+				elif event.type == pygame.MOUSEBUTTONDOWN:
+					if event.button == 1:  # Botão esquerdo do mouse
+						for button in buttons:
+							if button.is_clicked(event.pos):
+								button.action()
+				for button in buttons:
+					button.handle_event(event)
+
+        # Desenhar a tela
 			self.display_surface.blit(self.bg_menu,(0,0))
+			for button in buttons:
+				button.draw(self.display_surface)
+
+		# Desenhar texto na tela
 			text_surface = self.font.render("GAME OVER", True, (255, 255, 255))
-			text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+			text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, 120))
 			self.display_surface.blit(text_surface, text_rect)
-			
+
+        # Atualizar a tela
 			pygame.display.flip()
-
-	
-			
-
-
 
 if __name__ == '__main__':
 	game = Game()
