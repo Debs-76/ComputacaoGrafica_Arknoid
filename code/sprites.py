@@ -6,7 +6,7 @@ class Upgrade(pygame.sprite.Sprite):
 	def __init__(self,pos,upgrade_type,groups):
 		super().__init__(groups)
 		self.upgrade_type = upgrade_type
-		self.image = pygame.image.load(f'../graphics/upgrades/{upgrade_type}.png').convert_alpha()
+		self.image = pygame.image.load(f'graphics/upgrades/{upgrade_type}.png').convert_alpha()
 		self.rect = self.image.get_rect(midtop = pos)
 
 		self.pos = pygame.math.Vector2(self.rect.topleft)
@@ -23,7 +23,7 @@ class Downgrade(pygame.sprite.Sprite):
 	def __init__(self,pos,downgrade_type, groups):
 		super().__init__(groups)
 		self.downgrade_type = downgrade_type
-		self.image = pygame.image.load(f'../graphics/downgrades/{downgrade_type}.png').convert_alpha()
+		self.image = pygame.image.load(f'graphics/downgrades/{downgrade_type}.png').convert_alpha()
 		self.rect = self.image.get_rect(midtop = pos)
 
 		self.pos = pygame.math.Vector2(self.rect.topleft)
@@ -72,7 +72,7 @@ class Player(pygame.sprite.Sprite):
 
 		# laser
 		self.laser_amount = 0
-		self.laser_surf = pygame.image.load('../graphics/other/laser.png').convert_alpha()
+		self.laser_surf = pygame.image.load('graphics/other/laser.png').convert_alpha()
 		self.laser_rects = []
 
 	def input(self):
@@ -150,8 +150,8 @@ class Ball(pygame.sprite.Sprite):
 		self.player = player
 		self.blocks = blocks
 
-		# ../graphics setup
-		self.image = pygame.image.load('../graphics/other/ball.png').convert_alpha()
+		# graphics setup
+		self.image = pygame.image.load('graphics/other/ball.png').convert_alpha()
 
 		# position setup
 		self.rect = self.image.get_rect(midbottom = player.rect.midtop)
@@ -163,12 +163,12 @@ class Ball(pygame.sprite.Sprite):
 		# active
 		self.active = False
 
-		# ../sounds
+		# sounds
 
-		self.impact_sound = pygame.mixer.Sound('../sounds/impact.wav')
+		self.impact_sound = pygame.mixer.Sound('sounds/impact.wav')
 		self.impact_sound.set_volume(0.1)
 
-		self.fail_sound = pygame.mixer.Sound('../sounds/fail.wav')
+		self.fail_sound = pygame.mixer.Sound('sounds/fail.wav')
 		self.fail_sound.set_volume(0.1)
 
 	def window_collision(self,direction):

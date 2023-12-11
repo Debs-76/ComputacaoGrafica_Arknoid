@@ -13,13 +13,13 @@ class Game:
 		self.display_surface = pygame.display.set_mode((WINDOW_WIDTH,WINDOW_HEIGHT))
 
 		# background
-		self.bg = self.create_bg('../graphics/other/bg2.png')
+		self.bg = self.create_bg('graphics/other/bg2.png')
 
 		# background base
-		self.bg_menu = self.create_bg('../graphics/other/bgMenu.png')
+		self.bg_menu = self.create_bg('graphics/other/bgMenu.png')
 
 		# fonte da tela do menu
-		self.font = pygame.font.Font("../fonts/ARCADE_I.TTF", 25)
+		self.font = pygame.font.Font("fonts/ARCADE_I.TTF", 25)
 
 		# sprite group setup
 		self.all_sprites = pygame.sprite.Group()
@@ -35,28 +35,32 @@ class Game:
 		self.ball = Ball(self.all_sprites,self.player,self.block_sprites)
 
 		# hearts
-		self.heart_surf = pygame.image.load('../graphics/other/heart.png').convert_alpha()
+		self.heart_surf = pygame.image.load('graphics/other/heart.png').convert_alpha()
 
 		# projectile
-		self.projectile_surf = pygame.image.load('../graphics/other/projectile.png').convert_alpha()
+		self.projectile_surf = pygame.image.load('graphics/other/projectile.png').convert_alpha()
 		self.can_shoot = False
 		self.shoot_time = 0
 
-		self.laser_sound = pygame.mixer.Sound('../sounds/laser.wav')
+		self.laser_sound = pygame.mixer.Sound('sounds/laser.wav')
 		self.laser_sound.set_volume(0.1)
 
-		self.powerup_sound = pygame.mixer.Sound('../sounds/powerup.wav')
+		self.powerup_sound = pygame.mixer.Sound('sounds/powerup.wav')
 		self.powerup_sound.set_volume(0.1)
 
-		self.laserhit_sound = pygame.mixer.Sound('../sounds/laser_hit.wav')
-		self.laserhit_sound.set_volume(0.02)
+		# [final] downgrade_sound
 
-		self.game_over = pygame.mixer.Sound('../sounds/game_over.wav')
-		self.game_over.set_volume(0.05)
+		self.laserhit_sound = pygame.mixer.Sound('sounds/laser_hit.wav')
+		self.laserhit_sound.set_volume(0.1)
 
-		self.music = pygame.mixer.Sound('../sounds/music.wav')
-		self.music.set_volume(0.05)
-		self.music.play(loops = -1)
+		self.menu = pygame.mixer.Sound('sounds/menu.wav')
+		self.menu.set_volume(0.7)
+
+		self.game_over = pygame.mixer.Sound('sounds/game_over.wav')
+		self.game_over.set_volume(0.7)
+
+		self.music = pygame.mixer.Sound('sounds/music.wav')
+		self.music.set_volume(0.7)
 
 	def create_upgrade(self,pos):
 		upgrade_type = choice(UPGRADES)
@@ -101,6 +105,7 @@ class Game:
 		overlap_sprintes = pygame.sprite.spritecollide(self.player,self.downgrade_sprites,True)
 		for sprite in overlap_sprintes:
 			self.player.downgrade(sprite.downgrade_type)
+			# [final] downgrade_sound.play()
 			self.powerup_sound.play()
 
 	def create_projectile(self):
@@ -129,8 +134,14 @@ class Game:
 		last_time = time.time()
 		pygame.display.set_caption("Arknoid")
 		run = True
+
+		# [final] menu music stop
+		self.menu.stop()
+		# [final] main music play
+		self.music.play(loops = -1)
+		
 		while run:
-			
+
 			# delta time
 			dt = time.time() - last_time
 			last_time = time.time()
@@ -147,11 +158,15 @@ class Game:
 							self.can_shoot = False
 							self.shoot_time = pygame.time.get_ticks()
 			if self.player.hearts <= 0:
+				# [final] main music stop
+				self.music.stop()
+				# [final] death sound
+				self.game_over.play()
 				self.game_over_screen()
-			
+
 			# draw bg
 			self.display_surface.blit(self.bg,(0,0))
-			
+
 			# update the game
 			self.all_sprites.update(dt)
 			self.upgrade_collision()
@@ -173,13 +188,16 @@ class Game:
 
 	def main_menu(self):
 		pygame.display.set_caption("Menu")
+
+		# [final] menu music play
+		self.menu.play(loops = -1)
 		
-	# setup
+		# setup
 		start_button = Button(800, 200, 200, 50, "Start", action=game.run)
 		quit_button = Button(800, 300, 200, 50, "Quit", action=game.quit)
 		buttons = [start_button, quit_button]
 
-    # Loop principal
+    	# Loop principal
 		while True:
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
@@ -192,39 +210,56 @@ class Game:
 				for button in buttons:
 					button.handle_event(event)
 
-        # Desenhar a tela
+        	# Desenhar a tela
 			self.display_surface.blit(self.bg_menu,(0,0))
 			for button in buttons:
 				button.draw(self.display_surface)
 
-		# Desenhar texto na tela
+			# Desenhar texto na tela
 			text_surface = self.font.render("GALAXY ARKA", True, (255, 255, 255))
 			text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, 120))
 			self.display_surface.blit(text_surface, text_rect)
 
-        # Atualizar a tela
+        	# Atualizar a tela
 			pygame.display.flip()
 
+	def restart(self):
+		self.__init__()
+		self.run()
+
 	def game_over_screen(self):
-		
+		pygame.display.set_caption("Game Over")
+
+		# setup
+		restart_button = Button(800, 200, 200, 50, "Restart", action=game.restart)
+		quit_button = Button(800, 300, 200, 50, "Quit", action=game.quit)
+		buttons = [restart_button, quit_button]
+
+    	# Loop principal
 		while True:
-			pygame.display.set_caption("Game Over")
-			
 			for event in pygame.event.get():
 				if event.type == pygame.QUIT:
 					self.quit()
-			
+				elif event.type == pygame.MOUSEBUTTONDOWN:
+					if event.button == 1:  # Botão esquerdo do mouse
+						for button in buttons:
+							if button.is_clicked(event.pos):
+								button.action()
+				for button in buttons:
+					button.handle_event(event)
+
+        	# Desenhar a tela
 			self.display_surface.blit(self.bg_menu,(0,0))
+			for button in buttons:
+				button.draw(self.display_surface)
+
+			# Desenhar texto na tela
 			text_surface = self.font.render("GAME OVER", True, (255, 255, 255))
-			text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2))
+			text_rect = text_surface.get_rect(center=(WINDOW_WIDTH // 2, 120))
 			self.display_surface.blit(text_surface, text_rect)
-			
+
+        	# Atualizar a tela
 			pygame.display.flip()
-
-	
-			
-
-
 
 if __name__ == '__main__':
 	game = Game()
